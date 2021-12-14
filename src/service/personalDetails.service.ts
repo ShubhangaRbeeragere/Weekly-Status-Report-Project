@@ -1,13 +1,14 @@
 import {getManager} from "typeorm";
 import {Response, Request} from "express";
-import personalData from "../model/entity/personalData";
+import PersonalData from "../model/entity/personalData";
+import PhoneNumber from "../model/entity/phoneNumber"
 import * as layout from "../interface/personalDetails.interface";
 
 
 //function to get all the details of the employees from the database//////////////////////
 export const getAll = async(req: Request, res: Response) =>{
     let dataManager = getManager();
-    let receivedData = await dataManager.find(personalData); 
+    let receivedData = await dataManager.find(PersonalData); 
     // console.log(receivedData);
     res.status(200).send(receivedData);
 }
@@ -19,7 +20,7 @@ export const getOnly = async(req: Request, res: Response) => {
 
     let dataManager = getManager();
     try{
-        let findData = await dataManager.findOne(personalData, personalId); 
+        let findData = await dataManager.findOne(PersonalData, personalId); 
         if(findData === undefined){
             throw new Error("Data Dosen't Exist");
         }
@@ -36,7 +37,7 @@ export const getOnly = async(req: Request, res: Response) => {
 export const addData = async(req: Request, res: Response) => {
     const receivedData: layout.personalData = req.body; 
 
-    let insertData = new personalData();
+    let insertData = new PersonalData();
     console.log("before: ", receivedData);
     insertData.address = receivedData.address;
     insertData.applicant_name = receivedData.applicantName;
@@ -50,7 +51,7 @@ export const addData = async(req: Request, res: Response) => {
 
     try{
         let manager = getManager();
-        let checkDetails = await manager.findOne(personalData, {email_address: receivedData.emailAddress})
+        let checkDetails = await manager.findOne(PersonalData, {email_address: receivedData.emailAddress})
         if(checkDetails){
             throw new Error("POST: Data Already Exists");
         }
@@ -69,7 +70,7 @@ export const updateData = async(req: Request, res: Response) => {
     let receivedData: layout.personalData = req.body;
     let manager = getManager();
     try{
-        let updateDetails = await manager.findOne(personalData,
+        let updateDetails = await manager.findOne(PersonalData,
             {
                 applicant_name: receivedData.applicantName,
                 email_address: receivedData.emailAddress
@@ -103,7 +104,7 @@ export const deleteData = async(req: Request, res: Response) => {
     let receivedData: layout.mailAndName = req.body;
     let manager = getManager();
     try{
-        let deleteDetails = await manager.findOne(personalData,
+        let deleteDetails = await manager.findOne(PersonalData,
             {
                 applicant_name: receivedData.applicantName,
                 email_address: receivedData.emailAddress
