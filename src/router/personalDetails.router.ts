@@ -9,5 +9,4 @@ router.post("/addData", services.addData);
 router.put("/updateData", services.updateData);
 router.delete("/deleteData", services.deleteData);
 
-
 export default router;
