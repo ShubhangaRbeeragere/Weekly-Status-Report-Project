@@ -5,6 +5,8 @@ import cors from "cors";
 import mainRouter from "./init/router"
 import connect from "./init/databaseConnect"
 import bodyParser from "body-parser";
+//testing///////////////////////////////////////////////
+//testing\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 dotenv.config();
 let app = express();
@@ -13,14 +15,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use("/", mainRouter);
-
 //connect to the database and check for errors
 connect
 .then(
-    () => console.log("connected")
+    () => {
+        console.log("connected to the database successfully");
+    } 
 )
 .catch(
-    () => {console.log("can't connect to the database")}
+    (error) => {console.log(error.message)}
 );
 
 //provide the port details for the http requests

@@ -1,14 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
 import PersonalData from "./personalData"
 @Entity()
 export default class PhoneNumber{
     @PrimaryGeneratedColumn()
     phone_id: number;
 
-    @Column()
+    @Column({type: "varchar", length: 14})
     phone_number: string;
 
-    @OneToOne(type => PersonalData)
+    @ManyToOne(type => PersonalData)
     @JoinColumn()
     personalData: PersonalData
 }

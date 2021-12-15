@@ -1,5 +1,5 @@
-import {Entity, Column, PrimaryGeneratedColumn} from "typeorm";
-
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm";
+import PhoneNumber from "./phoneNumber";
 @Entity()
 export default class PersonalDetails{
     @PrimaryGeneratedColumn()
@@ -22,4 +22,7 @@ export default class PersonalDetails{
 
     @Column({nullable: false, type: "date"})
     available_from: string
+
+    @OneToMany(type => PhoneNumber, phoneNumber => phoneNumber.personalData)
+    phoneKey: PhoneNumber
 }

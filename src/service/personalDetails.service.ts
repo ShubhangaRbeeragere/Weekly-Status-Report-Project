@@ -4,7 +4,11 @@ import PersonalData from "../model/entity/personalData";
 import PhoneNumber from "../model/entity/phoneNumber"
 import * as layout from "../interface/personalDetails.interface";
 
+///testing////////////////////////
+    
 
+
+////testing///////////////////////
 //function to get all the details of the employees from the database//////////////////////
 export const getAll = async(req: Request, res: Response) =>{
     let dataManager = getManager();
@@ -36,7 +40,7 @@ export const getOnly = async(req: Request, res: Response) => {
 //function for adding the data to the table//////////////////////
 export const addData = async(req: Request, res: Response) => {
     const receivedData: layout.personalData = req.body; 
-
+    console.log("data ", receivedData);
     let insertData = new PersonalData();
     console.log("before: ", receivedData);
     insertData.address = receivedData.address;
