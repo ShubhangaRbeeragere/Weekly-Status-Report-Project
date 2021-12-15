@@ -6,6 +6,9 @@ import mainRouter from "./init/router"
 import connect from "./init/databaseConnect"
 import bodyParser from "body-parser";
 //testing///////////////////////////////////////////////
+import PersonalData from "../src/model/entity/personalData"
+import {getManager, getConnection} from "typeorm";
+import PersonalDetails from "../src/model/entity/personalData";
 //testing\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 dotenv.config();
@@ -18,8 +21,33 @@ app.use("/", mainRouter);
 //connect to the database and check for errors
 connect
 .then(
-    () => {
+    async() => {
         console.log("connected to the database successfully");
+        //testing
+        /*
+        let manager = getManager();
+
+        await manager
+        .query(
+            "ALTER SEQUENCE public.personal_details_applicant_id_seq RESTART WITH 10000;"
+        )
+        await manager
+        .query(
+            "UPDATE public.personal_details SET applicant_id = nextval('public.personal_details_applicant_id_seq');"
+        )
+
+        await manager
+        .query(
+            "ALTER SEQUENCE public.personal_details_applicant_id_seq RESTART WITH 1;"
+        )
+
+        await manager
+        .query(
+            "UPDATE public.personal_details SET applicant_id = nextval('public.personal_details_applicant_id_seq');"
+        )
+        console.log("personal_details_sequence restarted");
+        //testing
+        */
     } 
 )
 .catch(

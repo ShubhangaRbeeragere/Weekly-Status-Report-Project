@@ -2,11 +2,9 @@ import {getManager} from "typeorm";
 import {Response, Request} from "express";
 import PersonalData from "../model/entity/personalData";
 import PhoneNumber from "../model/entity/phoneNumber"
-import * as layout from "../interface/personalDetails.interface";
+import * as personalLayout from "../interface/personalDetails.interface";
 
 ///testing////////////////////////
-    
-
 
 ////testing///////////////////////
 //function to get all the details of the employees from the database//////////////////////
@@ -39,27 +37,37 @@ export const getOnly = async(req: Request, res: Response) => {
 
 //function for adding the data to the table//////////////////////
 export const addData = async(req: Request, res: Response) => {
-    const receivedData: layout.personalData = req.body; 
+    const receivedData: personalLayout.personalData = req.body; 
     console.log("data ", receivedData);
-    let insertData = new PersonalData();
-    console.log("before: ", receivedData);
-    insertData.address = receivedData.address;
-    insertData.applicant_name = receivedData.applicantName;
-    insertData.email_address = receivedData.emailAddress;
-    insertData.address = receivedData.address;
-    insertData.applied_date = receivedData.appliedDate;
-    insertData.applied_position = receivedData.appliedPosition;
-    insertData.available_from = receivedData.availableFrom;
 
-    // console.log("after: ",insertData);
+    //create a manager to store data
+    let manager = getManager();
+    let phoneDetails = new PhoneNumber();
+    let applicantDetails = new PersonalData();
+    //applicant_details table data
+    applicantDetails.address = receivedData.address;
+    applicantDetails.applicant_name = receivedData.applicantName;
+    applicantDetails.email_address = receivedData.emailAddress;
+    applicantDetails.address = receivedData.address;
+    applicantDetails.applied_date = receivedData.appliedDate;
+    applicantDetails.applied_position = receivedData.appliedPosition;
+    applicantDetails.available_from = receivedData.availableFrom;
 
     try{
-        let manager = getManager();
+
         let checkDetails = await manager.findOne(PersonalData, {email_address: receivedData.emailAddress})
         if(checkDetails){
-            throw new Error("POST: Data Already Exists");
+            throw new Error("POST: User Already Exists");
         }
-        await manager.save(insertData);
+        await manager.save(applicantDetails);
+
+        //phone_number table data
+        receivedData.phoneNumber.forEach(async(phone:any) => {
+            phoneDetails.phone_number = phone.number;
+            phoneDetails.personalData = applicantDetails;
+            await manager.save(phoneDetails);
+        })
+ 
         console.log("data saved successfuly");
         res.status(200).send("POST: Data Saved");
     }
@@ -67,11 +75,29 @@ export const addData = async(req: Request, res: Response) => {
         console.log("error: ", error.message);
         res.status(400).send(error.message);
     }
+    
+   // console.log("after: ",insertData);
+    /*
+    try{
+        let manager = getManager();
+        let checkDetails = await manager.findOne(PersonalData, {email_address: receivedData.emailAddress})
+        if(checkDetails){
+            throw new Error("POST: Data Already Exists");
+        }
+        await manager.save(applicantDetails);
+        console.log("data saved successfuly");
+        res.status(200).send("POST: Data Saved");
+    }
+    catch(error: any){
+        console.log("error: ", error.message);
+        res.status(400).send(error.message);
+    }
+    */
 }
 
 //update the data in the database/////////////////////////////////////
 export const updateData = async(req: Request, res: Response) => {
-    let receivedData: layout.personalData = req.body;
+    let receivedData: personalLayout.personalData = req.body;
     let manager = getManager();
     try{
         let updateDetails = await manager.findOne(PersonalData,
@@ -105,7 +131,7 @@ export const updateData = async(req: Request, res: Response) => {
 
 //delete data from the database //////////////////////////////
 export const deleteData = async(req: Request, res: Response) => {
-    let receivedData: layout.mailAndName = req.body;
+    let receivedData: personalLayout.mailAndName = req.body;
     let manager = getManager();
     try{
         let deleteDetails = await manager.findOne(PersonalData,
