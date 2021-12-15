@@ -1,10 +1,11 @@
 import express from "express";
-import personalDetailsRouter from "../router/personalDetails.router"
+import personalDetailsRouter from "../router/personalDetails.router";
+import previousEmployementRouter from "../router/previousEmployment.router";
 
-let mainRouter = express.Router();
+const mainRouter = express.Router();
 mainRouter.use("/personalInfo", personalDetailsRouter);
+mainRouter.use("/employment", previousEmployementRouter);
 // mainRouter.use("/Education")
-// mainRouter.use("/previousEmployment")
 
 export default mainRouter;
 
