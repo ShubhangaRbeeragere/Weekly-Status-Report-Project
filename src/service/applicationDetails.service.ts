@@ -10,8 +10,6 @@ import PrviousEmployment from "../model/entity/previousEmployment";
 import Bridge from "../model/entity/bridge";
 
 
-
-
 //get all the data from the database
 export const getAll = () => {
 
