@@ -15,7 +15,7 @@ import * as applicantDetailsLayout from "../interface/applicantDetails.interface
 export const getAll = async(req: Request, res: Response) => {
     try{
         let data = await getManager().find(Bridge, {relations: ["applicant_id_fk", "institution_id_fk", "degree_id_fk", "course_id_fk"]})
-        res.send(data);
+        res.status(200).send(data);
     }
     catch(error: any){
         console.log(error.message);
