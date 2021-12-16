@@ -10,6 +10,7 @@ import bodyParser from "body-parser";
 
 import { getManager } from "typeorm";
 import ApplicantDetails from "./model/entity/applicantDetails";
+import Bridge from "./model/entity/bridge";
 
 //testing
 dotenv.config();
@@ -26,13 +27,13 @@ connect
     async() => {
         console.log("connected")
         console.log("--------------------------------")
-        let data = await getManager().find(ApplicantDetails, {relations: ["phone_key", "employment_key"]})
+        let data = await getManager().find(Bridge, {relations: ["applicant_id_fk", "institution_id_fk", "degree_id_fk", "course_id_fk"]})
         console.log(data);
         console.log("--------------------------------")
     }
 )
 .catch(
-    () => {console.log("can't connect to the database")}
+    (error) => {console.log(error.message)}
 );
 
 //provide the port details for the http requests

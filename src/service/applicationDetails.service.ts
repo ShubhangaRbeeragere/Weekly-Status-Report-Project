@@ -37,7 +37,7 @@ export const addData = async(req: Request, res: Response) => {
     const receivedData: applicantDetailsLayout.applicantDetails = req.body;
     const personalData = receivedData.personalDetails;
     const employmentData = receivedData.previousEmployment;
-    const education = receivedData.education;
+    const educationData = receivedData.education;
 //////////////////////1>>>>>>> add the personal details to the table ApplicantDetails and PhoneNumber//////////////////// 
    try{
 
@@ -79,7 +79,59 @@ export const addData = async(req: Request, res: Response) => {
            previousEmployment.applicant_id_fk = applicantDetails;
            await manager.save(previousEmployment);
         })
-        let previousEmployment = new PreviousEmployment();
+
+//////////////3>>>>>>>>>>>>>>>>>Education details///////////////////////////////////////////////////////
+        educationData.forEach(async(education) => {
+            let institution = new Institution();
+            let degree = new Degree();
+            let specialization = new Specialization();
+            let bridge = new Bridge;
+
+            //save education
+            let checkDegree = await manager.findOne(Degree, {degree: education.degree});
+            let checkInstitution = await manager.findOne(Institution, {institution: education.institution});
+            let checkCourse = await manager.findOne(Specialization, {course: education.specialization});
+
+            //check if already exists, if not save it else save existing one
+            //also save the foreign keys in bridge table w.r.t 'check' datas
+            if(!checkInstitution){
+                institution.institution = education.institution;
+                await manager.save(institution); 
+                bridge.institution_id_fk = institution;
+            }
+            else{
+                bridge.institution_id_fk = checkInstitution;
+            }
+
+            if(!checkDegree){
+                degree.degree = education.degree;
+                await manager.save(degree);
+                bridge.degree_id_fk = degree;
+            }
+            else{
+                bridge.degree_id_fk = checkDegree;
+            }
+
+            if(!checkCourse){
+                specialization.course = education.specialization;
+                await manager.save(specialization);
+                bridge.course_id_fk = specialization;
+            }
+            else{
+                bridge.course_id_fk = checkCourse;
+            }
+            //save dates
+            bridge.start_date = education.startDate;
+            bridge.end_date = education.endDate;
+            //save application foreign key in bridge table
+            bridge.applicant_id_fk = applicantDetails;
+
+            await manager.save(bridge);
+            // //get all the foreign
+            // let institution_id_fk = await manager.findOne(Institution, {institution: education.institution});
+            // let degree_id_fk = await manager.findOne(Degree, {degree: education.degree});
+            // let course_id = await manager.findOne(Specialization, {course: education.specialization});
+        })
         console.log("POST: saved user succesfully");
         res.status(400).send("POST: data saved successfully");
    }
