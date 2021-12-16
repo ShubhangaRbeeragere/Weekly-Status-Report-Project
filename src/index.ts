@@ -1,11 +1,17 @@
 import "reflect-metadata";
-import express from "express";
+import express, { application } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mainRouter from "./init/router"
 import connect from "./init/databaseConnect"
 import bodyParser from "body-parser";
 
+//testing
+
+import { getManager } from "typeorm";
+import ApplicantDetails from "./model/entity/applicantDetails";
+
+//testing
 dotenv.config();
 let app = express();
 app.use(cors());
@@ -17,7 +23,13 @@ app.use("/", mainRouter);
 //connect to the database and check for errors
 connect
 .then(
-    () => console.log("connected")
+    async() => {
+        console.log("connected")
+        console.log("--------------------------------")
+        let data = await getManager().find(ApplicantDetails, {relations: ["phone_key"]})
+        console.log(data);
+        console.log("--------------------------------")
+    }
 )
 .catch(
     () => {console.log("can't connect to the database")}

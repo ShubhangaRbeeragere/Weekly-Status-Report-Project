@@ -6,7 +6,6 @@ import PhoneNumber from "../model/entity/phoneNumber";
 import Specialization from "../model/entity/specialization";
 import PrviousEmployment from "../model/entity/previousEmployment";
 import Bridge from "../model/entity/bridge";
-import { application } from "express";
 
 const connect = createConnection({
     type: "postgres",
