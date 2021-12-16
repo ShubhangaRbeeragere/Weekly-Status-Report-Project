@@ -26,7 +26,7 @@ connect
     async() => {
         console.log("connected")
         console.log("--------------------------------")
-        let data = await getManager().find(ApplicantDetails, {relations: ["phone_key"]})
+        let data = await getManager().find(ApplicantDetails, {relations: ["phone_key", "employment_key"]})
         console.log(data);
         console.log("--------------------------------")
     }

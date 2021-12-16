@@ -36,12 +36,10 @@ export const addData = async(req: Request, res: Response) => {
     let manager = getManager();
     const receivedData: applicantDetailsLayout.applicantDetails = req.body;
     const personalData = receivedData.personalDetails;
-    const previousEmployment = receivedData.previousEmployment;
+    const employmentData = receivedData.previousEmployment;
     const education = receivedData.education;
-    
-   //1> add the personal details to the table ApplicantDetails and PhoneNumber 
+//////////////////////1>>>>>>> add the personal details to the table ApplicantDetails and PhoneNumber//////////////////// 
    try{
-        let applicantDetails = new ApplicantDetails();
 
         //check if data already exists
         let checkApplicant = await manager.findOne(ApplicantDetails,
@@ -51,6 +49,7 @@ export const addData = async(req: Request, res: Response) => {
             throw new Error("POST: user already exists");
         }
 
+        let applicantDetails = new ApplicantDetails();
         applicantDetails.applicant_name = personalData.applicantName;
         applicantDetails.applied_position = personalData.appliedPosition;
         applicantDetails.applied_date = personalData.appliedDate;
@@ -61,7 +60,7 @@ export const addData = async(req: Request, res: Response) => {
         //save applicantDetails
         await manager.save(applicantDetails);
 
-        //add phone details
+        //add phone details///////////////////////////////////////////////
         let phoneData = personalData.phone;
         phoneData.forEach(async(phone) => {
             let phoneDetails = new PhoneNumber();  
@@ -70,6 +69,17 @@ export const addData = async(req: Request, res: Response) => {
             await manager.save(phoneDetails);
         })
 
+///////////////2>>>>>>>>>>>>>>>>>previous employment details///////////////////////////////////////////
+        employmentData.forEach(async(employment) => {
+           let  previousEmployment = new PreviousEmployment();
+           previousEmployment.company_name = employment.company;
+           previousEmployment.position = employment.position;
+           previousEmployment.start_date = employment.startDate;
+           previousEmployment.end_date = employment.endDate;
+           previousEmployment.applicant_id_fk = applicantDetails;
+           await manager.save(previousEmployment);
+        })
+        let previousEmployment = new PreviousEmployment();
         console.log("POST: saved user succesfully");
         res.status(400).send("POST: data saved successfully");
    }
