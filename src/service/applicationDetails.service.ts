@@ -12,8 +12,16 @@ import Bridge from "../model/entity/bridge";
 import * as applicantDetailsLayout from "../interface/applicantDetails.interface";
 
 //get all the data from the database
-export const getAll = () => {
-
+export const getAll = async(req: Request, res: Response) => {
+    try{
+        let data = await getManager().find(Bridge, {relations: ["applicant_id_fk", "institution_id_fk", "degree_id_fk", "course_id_fk"]})
+        res.send(data);
+    }
+    catch(error: any){
+        console.log(error.message);
+        res.status(400).send(error.message);
+    }
+    
 }
 
 //get only one employee's data from the database
@@ -23,7 +31,7 @@ export const getOnly = () => {
 
 //add the data of an employee to the database
 /*
-    insertion schema
+Insertion schema for database
     1.applicantDetails
     2.phoneNumber
     3.previousEmployment
@@ -92,7 +100,7 @@ export const addData = async(req: Request, res: Response) => {
             let checkInstitution = await manager.findOne(Institution, {institution: education.institution});
             let checkCourse = await manager.findOne(Specialization, {course: education.specialization});
 
-            //check if already exists, if not save it else save existing one
+            //check if already exists, if not save it.
             //also save the foreign keys in bridge table w.r.t 'check' datas
             if(!checkInstitution){
                 institution.institution = education.institution;
@@ -127,7 +135,6 @@ export const addData = async(req: Request, res: Response) => {
             bridge.applicant_id_fk = applicantDetails;
 
             await manager.save(bridge);
-            // //get all the foreign
             // let institution_id_fk = await manager.findOne(Institution, {institution: education.institution});
             // let degree_id_fk = await manager.findOne(Degree, {degree: education.degree});
             // let course_id = await manager.findOne(Specialization, {course: education.specialization});
