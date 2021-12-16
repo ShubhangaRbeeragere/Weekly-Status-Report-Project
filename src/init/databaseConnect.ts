@@ -2,6 +2,10 @@ import {createConnection} from "typeorm"
 import PersonalDetails from "../model/entity/personalData"
 import PhoneNumber from "../model/entity/phoneNumber"; 
 import PreviousEmployment from "../model/entity/previousEmployment";
+import institution from "../model/entity/institution";
+import degree from "../model/entity/degree";
+import specialization from "../model/entity/specialization";
+
 
 const connect = createConnection({
     type: "postgres",
@@ -13,7 +17,10 @@ const connect = createConnection({
     entities: [
         PersonalDetails,
         PhoneNumber,
-        PreviousEmployment
+        PreviousEmployment,
+        institution,
+        degree,
+        specialization
     ],
     synchronize: true
 })
