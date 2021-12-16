@@ -1,5 +1,5 @@
 import {createConnection} from "typeorm"
-import personalDetails from "../model/entity/personalData"
+import personalDetails from "../model/entity/applicantDetails"
 
 const connect = createConnection({
     type: "postgres",

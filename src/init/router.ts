@@ -1,8 +1,8 @@
 import express from "express";
-import personalDetailsRouter from "../router/personalDetails.router"
+import applicationDetails from "../router/applicantDetails.router"
 
 let mainRouter = express.Router();
-mainRouter.use("/personalInfo", personalDetailsRouter);
+mainRouter.use("/applicantDetails", applicationDetails);
 
 export default mainRouter;
 
