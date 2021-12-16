@@ -1,6 +1,10 @@
-export interface employment{
-    companyName: string,
-    position: string,
-    startDate: string,
-    endDate: string
+export interface previousEmployment{
+    applicantName: string,
+    emailAddress: string,
+    employment: {
+        companyName: string,
+        position: string,
+        startDate: string,
+        endDate: string
+    }[]
 }

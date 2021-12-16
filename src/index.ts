@@ -24,6 +24,9 @@ connect
     async() => {
         console.log("connected to the database successfully");
         //testing
+        // let data = await getManager().find(PersonalData, {relations: ["companyKey", "phoneKey"]})
+        // console.log(data[0].companyKey); 
+        // console.log(data[0].phoneKey);
         /*
         let manager = getManager();
 

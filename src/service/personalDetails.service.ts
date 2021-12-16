@@ -1,5 +1,5 @@
 import {getManager} from "typeorm";
-import {Response, Request} from "express";
+import {Response, Request, application} from "express";
 import PersonalData from "../model/entity/personalData";
 import PhoneNumber from "../model/entity/phoneNumber"
 import * as personalLayout from "../interface/personalDetails.interface";
@@ -42,7 +42,6 @@ export const addData = async(req: Request, res: Response) => {
 
     //create a manager to store data
     let manager = getManager();
-    let phoneDetails = new PhoneNumber();
     let applicantDetails = new PersonalData();
     //applicant_details table data
     applicantDetails.address = receivedData.address;
@@ -52,7 +51,6 @@ export const addData = async(req: Request, res: Response) => {
     applicantDetails.applied_date = receivedData.appliedDate;
     applicantDetails.applied_position = receivedData.appliedPosition;
     applicantDetails.available_from = receivedData.availableFrom;
-
     try{
 
         let checkDetails = await manager.findOne(PersonalData, {email_address: receivedData.emailAddress})
@@ -62,9 +60,10 @@ export const addData = async(req: Request, res: Response) => {
         await manager.save(applicantDetails);
 
         //phone_number table data
-        receivedData.phoneNumber.forEach(async(phone:any) => {
+        receivedData.phoneNumber.forEach(async(phone) => {
+            let phoneDetails = new PhoneNumber();
             phoneDetails.phone_number = phone.number;
-            phoneDetails.personalData = applicantDetails;
+            phoneDetails.personalDataFk = applicantDetails;
             await manager.save(phoneDetails);
         })
  

@@ -5,10 +5,10 @@ export default class PhoneNumber{
     @PrimaryGeneratedColumn()
     phone_id: number;
 
-    @Column({type: "varchar", length: 14})
+    @Column({type: "varchar", length: 14, nullable: false})
     phone_number: string;
 
     @ManyToOne(type => PersonalData)
     @JoinColumn()
-    personalData: PersonalData
+    personalDataFk: PersonalData
 }

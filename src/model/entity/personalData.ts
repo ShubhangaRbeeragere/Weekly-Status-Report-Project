@@ -1,28 +1,32 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm";
 import PhoneNumber from "./phoneNumber";
+import PreviousEmployment from "./previousEmployment";
 @Entity()
 export default class PersonalDetails{
     @PrimaryGeneratedColumn()
-    applicant_id: number
+    applicant_id: number;
 
     @Column({nullable: false, length: 100, type: "varchar"})
-    applicant_name: string
+    applicant_name: string;
 
     @Column({nullable: false, length: 100, type: "varchar"})
-    email_address: string
+    email_address: string;
 
     @Column({nullable: false, length: 200, type: "varchar"})
-    address: string
+    address: string;
 
     @Column({nullable: false, type: "date"})
-    applied_date: string
+    applied_date: string;
 
     @Column({nullable: false, length: 100, type: "varchar"})
-    applied_position: string
+    applied_position: string;
 
     @Column({nullable: false, type: "date"})
-    available_from: string
+    available_from: string;
 
-    @OneToMany(type => PhoneNumber, phoneNumber => phoneNumber.personalData)
-    phoneKey: PhoneNumber
+    @OneToMany(type => PhoneNumber, phoneNumber => phoneNumber.personalDataFk)
+    phoneKey: PhoneNumber;
+
+    @OneToMany(type => PreviousEmployment, previousEmployment => previousEmployment.personalDataFk)
+    companyKey: PreviousEmployment;
 }
