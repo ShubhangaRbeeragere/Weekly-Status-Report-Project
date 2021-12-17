@@ -5,7 +5,6 @@ import cors from "cors";
 import mainRouter from "./init/router"
 import connect from "./init/databaseConnect"
 import bodyParser from "body-parser";
-
 //testing
 
 import { getManager } from "typeorm";
