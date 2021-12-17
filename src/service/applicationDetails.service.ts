@@ -196,6 +196,18 @@ export const deleteData = async(req: Request, res: Response) => {
         employeeData.forEach(async(employee) => {
             await manager.remove(employee);
         })
+
+        //remove Phone Numbers
+
+        let phoneData = await manager.find(PhoneNumber, 
+            {
+                where: {applicant_id_fk: applicant}
+            })
+        phoneData.forEach(async(phone) => {
+            await manager.remove(phone);
+        })
+
+
         //get data of the applicant from the Bridge
         // const bridgeData = await manager.find(Bridge, 
         //     {
