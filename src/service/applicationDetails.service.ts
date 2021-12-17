@@ -209,14 +209,14 @@ export const deleteData = async(req: Request, res: Response) => {
             await manager.remove(phone);
         })
         //get all the foreign keys from the bridge
-        //get instiution details
+        //get instiution foreign keys
         let institutionData = await manager.find(Bridge,
             {
                 where: {applicant_id_fk: applicant},
                 relations: ["institution_id_fk"]
             })
 
-            console.log("---bridge", institutionData, );
+            // console.log("---bridge", institutionData, );
             institutionData.forEach(async(institution) => {
             let institutionId = institution.institution_id_fk;
             try{
@@ -241,22 +241,25 @@ export const deleteData = async(req: Request, res: Response) => {
             
         })
         
-/*
-        //delete degree
+        //save degree foreign keys
         let degreeData = await manager.find(Bridge,
             {
                 where: {applicant_id_fk: applicant},
                 relations: ["degree_id_fk"]
             })
         degreeData.forEach(async(degree) => {
-            let degreeId = degree.degree_id_fk.degree_id;
-            let name = degree.degree_id_fk.degree;
+            let degreeId = degree.degree_id_fk;
             try{
                 let checkDegree = await manager
-                .query(`SELECT * FROM public.degree WHERE degree_id != '${degreeId}' AND degree = '${name}'`);
-                if(checkDegree.length > 0){
+                .find(Bridge,
+                    {where: {degree_id_fk: degreeId,
+                             applicant_id_fk: Not(applicant.applicant_id)} 
+                    })
+                if(checkDegree.length === 0){
                     // await manager.remove(degree.degree_id_fk);
-                    console.log("DELETE: degree removed");
+                    console.log("DELETE: degree can removed");
+                    deleteDegree.push(degreeId.degree_id);
+                    console.log(deleteDegree);
                 }
             }
             catch(error: any){
@@ -265,7 +268,8 @@ export const deleteData = async(req: Request, res: Response) => {
             
         })
         
-        //delete specialization
+/*
+        //save specialization foreign keys
         let courseData = await manager.find(Bridge,
             {
                 where: {applicant_id_fk: applicant},
