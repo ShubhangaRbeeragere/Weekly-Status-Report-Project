@@ -1,4 +1,4 @@
-import { getManager } from "typeorm";
+import { getManager, Not } from "typeorm";
 import { Request, Response } from "express";
 import ApplicantDetails from "../model/entity/applicantDetails";
 import Degree from "../model/entity/degree";
@@ -11,6 +11,7 @@ import Bridge from "../model/entity/bridge";
 
 import * as applicantDetailsLayout from "../interface/applicantDetails.interface";
 import * as personalDetailsLayout from "../interface/personalData.interface";
+import { notEqual } from "assert";
 
 //get all the data from the database
 export const getAll = async(req: Request, res: Response) => {
@@ -179,6 +180,9 @@ export const updateData = () => {
 //delete the data of the employee in the database
 export const deleteData = async(req: Request, res: Response) => {
     let receivedData: personalDetailsLayout.mailAndName = req.body;
+    let deleteInstitution: number[] = [];
+    let deleteDegree: number[] = [];
+    let deleteCourse: number[] = [];
 
     let manager = getManager();
     try{
@@ -187,7 +191,6 @@ export const deleteData = async(req: Request, res: Response) => {
         if(applicant === undefined){
             throw new Error("GET: user doesn't exist");
         }
-        
         //remove previous employment
         let employeeData = await manager.find(PreviousEmployment, 
             {
@@ -198,7 +201,6 @@ export const deleteData = async(req: Request, res: Response) => {
         })
 
         //remove Phone Numbers
-
         let phoneData = await manager.find(PhoneNumber, 
             {
                 where: {applicant_id_fk: applicant}
@@ -206,7 +208,100 @@ export const deleteData = async(req: Request, res: Response) => {
         phoneData.forEach(async(phone) => {
             await manager.remove(phone);
         })
+        //get all the foreign keys from the bridge
+        //get instiution details
+        let institutionData = await manager.find(Bridge,
+            {
+                where: {applicant_id_fk: applicant},
+                relations: ["institution_id_fk"]
+            })
 
+            console.log("---bridge", institutionData, );
+            institutionData.forEach(async(institution) => {
+            let institutionId = institution.institution_id_fk;
+            try{
+                // let checkInstitution = await manager.query(`SELECT * FROM public.bridge WHERE institution_id_fk = ${institutionId} AND applicant_id_fk != ${applicant.applicant_id}`);
+                let checkInstitution = await manager
+                .find(Bridge,
+                    {
+                       where: {institution_id_fk: institutionId,
+                                applicant_id_fk: Not(applicant.applicant_id)}
+                    }
+                )
+                // console.log("------insti-", checkInstitution, "------insti-")
+                if(checkInstitution.length === 0){
+                    console.log("DELETE: can remove from institution");
+                    deleteInstitution.push(institutionId.institution_id)
+                    console.log("insti", deleteInstitution);
+                }
+            }
+            catch(error: any){
+                console.log("error: ", error.message);
+            }
+            
+        })
+        
+/*
+        //delete degree
+        let degreeData = await manager.find(Bridge,
+            {
+                where: {applicant_id_fk: applicant},
+                relations: ["degree_id_fk"]
+            })
+        degreeData.forEach(async(degree) => {
+            let degreeId = degree.degree_id_fk.degree_id;
+            let name = degree.degree_id_fk.degree;
+            try{
+                let checkDegree = await manager
+                .query(`SELECT * FROM public.degree WHERE degree_id != '${degreeId}' AND degree = '${name}'`);
+                if(checkDegree.length > 0){
+                    // await manager.remove(degree.degree_id_fk);
+                    console.log("DELETE: degree removed");
+                }
+            }
+            catch(error: any){
+                console.log(error.message);
+            }
+            
+        })
+        
+        //delete specialization
+        let courseData = await manager.find(Bridge,
+            {
+                where: {applicant_id_fk: applicant},
+                relations: ["course_id_fk"]
+            })
+        courseData.forEach(async(course) => {
+            let courseId = course.course_id_fk.course_id;
+            let name = course.course_id_fk.course;
+            try{
+                let checkDegree = await manager
+                .query(`SELECT * FROM public.specialization WHERE course_id != '${courseId}' AND course = '${name}'`);
+                if(checkDegree.length > 0){
+                    // await manager.remove(course.course_id_fk);
+                    console.log("DELETE: course removed");
+                }
+            }
+            catch(error: any){
+                console.log(error.message);
+            }
+            
+        })
+
+        //delete the rows in the bridge
+        let bridgeData = await manager.find(Bridge,
+            {
+                where: {applicant_id_fk: applicant},
+            })
+        bridgeData.forEach(async(bridge) => {
+            console.log(bridge);
+            try{
+                // await manager.remove(bridge);
+            }
+            catch(error: any){
+                console.log(error.message);
+            }
+        })
 
         //get data of the applicant from the Bridge
         // const bridgeData = await manager.find(Bridge, 
@@ -214,7 +309,8 @@ export const deleteData = async(req: Request, res: Response) => {
         //         where: {applicant_id_fk: applicant},
         //         relations: ["institution_id_fk", "degree_id_fk", "course_id_fk"]
         //     });
-    
+
+*/
         res.status(200).send("DELETE: deleted the data successfully");
         console.log("DELETE: deleted the data successfully");
     }
