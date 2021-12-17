@@ -1,8 +1,0 @@
-npm install -g typeorm
-typeorm init --name MyProject --database mysql
-
-//to solve experimental error user followint TSC configurations
-tsc --target ESNext --module ESNext --experimentalDecorators true --moduleResolution node .\<fileName>.ts
-
-//to run .js file, change the extension to .mjs and use "esm" (npm i esm)
-node -r esm ./<filename>.mjs
