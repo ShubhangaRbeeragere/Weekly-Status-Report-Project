@@ -217,10 +217,9 @@ export const deleteData = async(req: Request, res: Response) => {
             })
 
             // console.log("---bridge", institutionData, );
-            institutionData.forEach(async(institution) => {
-            let institutionId = institution.institution_id_fk;
-            try{
-                // let checkInstitution = await manager.query(`SELECT * FROM public.bridge WHERE institution_id_fk = ${institutionId} AND applicant_id_fk != ${applicant.applicant_id}`);
+            await institutionData.forEach(async(institution) => {
+                try{
+                let institutionId = institution.institution_id_fk;
                 let checkInstitution = await manager
                 .find(Bridge,
                     {
@@ -247,9 +246,9 @@ export const deleteData = async(req: Request, res: Response) => {
                 where: {applicant_id_fk: applicant},
                 relations: ["degree_id_fk"]
             })
-        degreeData.forEach(async(degree) => {
-            let degreeId = degree.degree_id_fk;
+        await degreeData.forEach(async(degree) => {
             try{
+                let degreeId = degree.degree_id_fk;
                 let checkDegree = await manager
                 .find(Bridge,
                     {where: {degree_id_fk: degreeId,
@@ -273,9 +272,9 @@ export const deleteData = async(req: Request, res: Response) => {
                 where: {applicant_id_fk: applicant},
                 relations: ["course_id_fk"]
             })
-        courseData.forEach(async(course) => {
-            let courseId = course.course_id_fk;
+        await courseData.forEach(async(course) => {
             try{
+                let courseId = course.course_id_fk;
                 let checkDegree = await manager
                 .find(Bridge, 
                     {
@@ -294,32 +293,65 @@ export const deleteData = async(req: Request, res: Response) => {
             
         })
 
-/*
         //delete the rows in the bridge
         let bridgeData = await manager.find(Bridge,
             {
                 where: {applicant_id_fk: applicant},
             })
-        bridgeData.forEach(async(bridge) => {
-            console.log(bridge);
+        await bridgeData.forEach(async(bridge) => {
             try{
-                // await manager.remove(bridge);
+                await manager.remove(bridge);
+                console.log("deleted rows in bridge");
             }
             catch(error: any){
                 console.log(error.message);
             }
         })
 
-        //get data of the applicant from the Bridge
-        // const bridgeData = await manager.find(Bridge, 
-        //     {
-        //         where: {applicant_id_fk: applicant},
-        //         relations: ["institution_id_fk", "degree_id_fk", "course_id_fk"]
-        //     });
+        //after deleting the foreign keys from bridge 
+        //now delete the rows in Institution, Degree, Specialization
+        await deleteInstitution.forEach(async(entry) => {
+            try{
+                let deleteData = await manager.findOne(Institution, {institution_id: entry})
+                await manager.remove(deleteData);
+                console.log("DELETE: institution deleted"); 
+            }
+            catch(error: any) {
+                console.log(error.message);
+            }
+        })
 
-*/
-        res.status(200).send("DELETE: deleted the data successfully");
-        console.log("DELETE: deleted the data successfully");
+        await deleteDegree.forEach(async(entry) => {
+            try{
+                let deleteData = await manager.findOne(Degree, {degree_id: entry})
+                await manager.remove(deleteData);
+                console.log("DELETE: degree deleted"); 
+            }
+            catch(error: any) {
+                console.log(error.message);
+            }
+        })
+
+        deleteCourse.forEach(async(entry) => {
+            try{
+                let deleteData = await manager.findOne(Specialization, {course_id: entry})
+                await manager.remove(deleteData);
+                console.log("DELETE: course deleted"); 
+            }
+            catch(error: any){
+                console.log(error.message)
+            }
+        })
+
+        //finalyy delete the applicant
+        await manager.remove(applicant)
+        .then(
+            () => {
+                console.log("deleted the applicant data")
+                res.status(200).send("deleted the data");
+            }
+        )
+        .catch(err => {console.log(err.message)})
     }
     catch(error: any){
        console.log(error.message);
