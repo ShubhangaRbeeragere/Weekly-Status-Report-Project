@@ -256,7 +256,6 @@ export const deleteData = async(req: Request, res: Response) => {
                              applicant_id_fk: Not(applicant.applicant_id)} 
                     })
                 if(checkDegree.length === 0){
-                    // await manager.remove(degree.degree_id_fk);
                     console.log("DELETE: degree can removed");
                     deleteDegree.push(degreeId.degree_id);
                     console.log(deleteDegree);
@@ -268,7 +267,6 @@ export const deleteData = async(req: Request, res: Response) => {
             
         })
         
-/*
         //save specialization foreign keys
         let courseData = await manager.find(Bridge,
             {
@@ -276,14 +274,18 @@ export const deleteData = async(req: Request, res: Response) => {
                 relations: ["course_id_fk"]
             })
         courseData.forEach(async(course) => {
-            let courseId = course.course_id_fk.course_id;
-            let name = course.course_id_fk.course;
+            let courseId = course.course_id_fk;
             try{
                 let checkDegree = await manager
-                .query(`SELECT * FROM public.specialization WHERE course_id != '${courseId}' AND course = '${name}'`);
-                if(checkDegree.length > 0){
-                    // await manager.remove(course.course_id_fk);
-                    console.log("DELETE: course removed");
+                .find(Bridge, 
+                    {
+                        where: {course_id_fk: courseId.course_id,
+                                applicant_id_fk: Not(applicant.applicant_id)}
+                    })
+                if(checkDegree.length === 0){
+                    console.log("DELETE: course can be removed");
+                    deleteCourse.push(courseId.course_id);
+                    console.log(deleteCourse);
                 }
             }
             catch(error: any){
@@ -292,6 +294,7 @@ export const deleteData = async(req: Request, res: Response) => {
             
         })
 
+/*
         //delete the rows in the bridge
         let bridgeData = await manager.find(Bridge,
             {
