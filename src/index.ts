@@ -27,8 +27,8 @@ connect
     async() => {
         console.log("connected")
         console.log("--------------------------------")
-        let data = await getManager().find(Bridge, {relations: ["applicant_id_fk", "institution_id_fk", "degree_id_fk", "course_id_fk"]})
-        console.log(data);
+        // let data = await getManager().find(Bridge, {relations: ["applicant_id_fk", "institution_id_fk", "degree_id_fk", "course_id_fk"]})
+        // console.log(data);
         console.log("--------------------------------")
     }
 )

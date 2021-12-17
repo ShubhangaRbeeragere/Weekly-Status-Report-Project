@@ -10,5 +10,5 @@ export interface personalDetails{
 
 export interface mailAndName{
     emailAddress: string,
-    applicantName: string
+    applicantName?: string
 }

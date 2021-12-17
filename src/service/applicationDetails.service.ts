@@ -10,6 +10,7 @@ import Bridge from "../model/entity/bridge";
 
 
 import * as applicantDetailsLayout from "../interface/applicantDetails.interface";
+import * as personalDetailsLayout from "../interface/personalData.interface";
 
 //get all the data from the database
 export const getAll = async(req: Request, res: Response) => {
@@ -25,8 +26,30 @@ export const getAll = async(req: Request, res: Response) => {
 }
 
 //get only one employee's data from the database
-export const getOnly = () => {
+export const getOnly = async(req: Request, res: Response) => {
+    let receivedData: any = req.query;
+    let manager = getManager();
+    try{
+        //get the applicant
+        const applicant = await manager.findOne(ApplicantDetails, {email_address: receivedData.emailAddress});
+        if(applicant === undefined){
+            throw new Error("GET: user doesn't exist");
+        }
 
+        //get data of the applicant from the Bridge
+        const bridgeData = await manager.find(Bridge, 
+            {
+                where: {applicant_id_fk: applicant},
+                relations: ["institution_id_fk", "degree_id_fk", "course_id_fk"]
+            });
+        let finalData = {...applicant, "education":[...bridgeData]};
+        // console.log(finalData);
+        res.status(200).send(finalData);
+    }
+    catch(error: any){
+        console.log(error.message);
+        res.status(400).send(error.message);
+    }
 }
 
 //add the data of an employee to the database
