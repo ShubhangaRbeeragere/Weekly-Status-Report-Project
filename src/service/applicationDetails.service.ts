@@ -177,6 +177,37 @@ export const updateData = () => {
 }
 
 //delete the data of the employee in the database
-export const deleteData = () => {
+export const deleteData = async(req: Request, res: Response) => {
+    let receivedData: personalDetailsLayout.mailAndName = req.body;
 
+    let manager = getManager();
+    try{
+        //get the applicant
+        const applicant = await manager.findOne(ApplicantDetails, {email_address: receivedData.emailAddress});
+        if(applicant === undefined){
+            throw new Error("GET: user doesn't exist");
+        }
+        
+        //remove previous employment
+        let employeeData = await manager.find(PreviousEmployment, 
+            {
+                where: {applicant_id_fk: applicant}
+            })
+        employeeData.forEach(async(employee) => {
+            await manager.remove(employee);
+        })
+        //get data of the applicant from the Bridge
+        // const bridgeData = await manager.find(Bridge, 
+        //     {
+        //         where: {applicant_id_fk: applicant},
+        //         relations: ["institution_id_fk", "degree_id_fk", "course_id_fk"]
+        //     });
+    
+        res.status(200).send("DELETE: deleted the data successfully");
+        console.log("DELETE: deleted the data successfully");
+    }
+    catch(error: any){
+       console.log(error.message);
+       res.status(200).send(error.message);
+    }
 }
